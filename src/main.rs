@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 
+mod params;
 mod procedural_tree_plugin;
+mod tree;
 
 use procedural_tree_plugin::ProceduralTreePlugin;
 
@@ -46,7 +48,7 @@ fn setup(
     });
     // camera
     commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 3.5, 8.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(7.0, 3.5, 0.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
 }

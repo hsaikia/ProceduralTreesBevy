@@ -9,3 +9,6 @@ edition = "2021"
 bevy = "0.10.1"
 bevy_egui = "0.20.3"
 rand = "0.8.5"
+
+# [target.wasm32-unknown-unknown]
+# runner = "wasm-server-runner"
