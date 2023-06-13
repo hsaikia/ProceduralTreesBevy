@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::{
+    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+    prelude::*,
+};
 use bevy_egui::EguiPlugin;
 
 mod params;
@@ -18,6 +21,8 @@ fn main() {
         }))
         .add_plugin(EguiPlugin)
         .add_plugin(ProceduralTreePlugin)
+        .add_plugin(LogDiagnosticsPlugin::default())
+        .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_startup_system(setup)
         .run();
 }

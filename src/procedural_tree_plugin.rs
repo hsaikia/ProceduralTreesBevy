@@ -17,7 +17,7 @@ pub struct ProceduralTreePlugin;
 impl Plugin for ProceduralTreePlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<NewParamsEvent>()
-            .insert_resource(RedrawTimer(Timer::from_seconds(0.2, TimerMode::Once)))
+            .insert_resource(RedrawTimer(Timer::from_seconds(0.1, TimerMode::Once)))
             .init_resource::<Params>()
             .init_resource::<ParamsVector>()
             .add_system(render_tree)
@@ -84,20 +84,30 @@ fn render_tree(
         let color_g = if t < 0.5 { 2.0 * t } else { 2.0 - 2.0 * t };
         let color_b = (t * 2.0 - 1.0).max(0.0);
 
+        let leaf_mesh = meshes.add(
+            Mesh::try_from(shape::Icosphere {
+                radius: params.leaf_radius,
+                subdivisions: 2,
+            })
+            .unwrap(),
+        );
+        let leaf_material = materials.add(Color::rgb(color_r, color_g, color_b).into());
+        let branch_mesh = meshes.add(Mesh::from(shape::Cylinder {
+            radius: params.base_radius,
+            height: 1.0,
+            resolution: 6,
+            segments: 6,
+        }));
+        let branch_material = materials.add(Color::rgb(0.8, 0.7, 0.6).into());
+
         for branch in &tree {
             if branch.2 {
                 // leaves are spheres
                 let entity_id = commands
                     .spawn(PbrBundle {
-                        mesh: meshes.add(
-                            Mesh::try_from(shape::Icosphere {
-                                radius: params.leaf_radius,
-                                subdivisions: 2,
-                            })
-                            .unwrap(),
-                        ),
+                        mesh: leaf_mesh.clone(),
                         transform: branch.0,
-                        material: materials.add(Color::rgb(color_r, color_g, color_b).into()),
+                        material: leaf_material.clone(),
                         ..default()
                     })
                     .id();
@@ -106,14 +116,9 @@ fn render_tree(
                 // cylinders (tree branches)
                 let entity_id = commands
                     .spawn(PbrBundle {
-                        mesh: meshes.add(Mesh::from(shape::Cylinder {
-                            radius: params.base_radius,
-                            height: 1.0,
-                            resolution: 6,
-                            segments: 6,
-                        })),
+                        mesh: branch_mesh.clone(),
                         transform: branch.0,
-                        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+                        material: branch_material.clone(),
                         ..default()
                     })
                     .id();

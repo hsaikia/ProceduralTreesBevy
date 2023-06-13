@@ -4,14 +4,14 @@ use rand::Rng;
 
 pub const NUM_PARAMS: usize = 7;
 pub const CHILDREN_MINMAX: [u8; 2] = [3, 6];
-pub const LEVELS_MINMAX: [u8; 2] = [1, 5];
+pub const LEVELS_MINMAX: [u8; 2] = [2, 5];
 pub const TRANSLATION_FACTOR_MINMAX: [f32; 2] = [0.0, 1.0];
 pub const ANGLE_MINMAX: [f32; 2] = [0.0, 0.5 * std::f32::consts::PI];
 pub const SCALE_MINMAX: [f32; 2] = [0.4, 0.8];
 pub const BASE_RADIUS_MINMAX: [f32; 2] = [0.1, 0.3];
 pub const LEAF_RADIUS_MINMAX: [f32; 2] = [0.1, 0.5];
-const PARAMS_VELOCITY_MAG: f32 = 0.4; // in [0, 1]
-const PARAMS_ACCELERATION_MAG: f32 = 0.1; // in [0, 1]
+const PARAMS_VELOCITY_MAG: f32 = 0.5; // in [0, 1]
+const PARAMS_ACCELERATION_MAG: f32 = 0.05; // in [0, 1]
 
 #[derive(Debug, Resource)]
 pub struct Params {
