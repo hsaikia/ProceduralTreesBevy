@@ -19,11 +19,13 @@ fn main() {
             }),
             ..default()
         }))
-        .add_plugin(EguiPlugin)
-        .add_plugin(ProceduralTreePlugin)
-        .add_plugin(LogDiagnosticsPlugin::default())
-        .add_plugin(FrameTimeDiagnosticsPlugin::default())
-        .add_startup_system(setup)
+        .add_plugins((
+            EguiPlugin,
+            ProceduralTreePlugin,
+            LogDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin,
+        ))
+        .add_systems(Startup, setup)
         .run();
 }
 

@@ -28,7 +28,7 @@ impl Default for Params {
     fn default() -> Self {
         Self {
             children: 3,
-            levels: 1,
+            levels: 2,
             child_translation_factor: 1.0,
             angle_from_parent_branch: 0.5 * std::f32::consts::PI,
             child_scale: 0.7,

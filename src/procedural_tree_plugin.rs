@@ -20,16 +20,17 @@ impl Plugin for ProceduralTreePlugin {
             .insert_resource(RedrawTimer(Timer::from_seconds(0.1, TimerMode::Once)))
             .init_resource::<Params>()
             .init_resource::<ParamsVector>()
-            .add_system(render_tree)
-            .add_system(rotator_system)
-            .add_system(random_walk)
-            .add_system(ui_system);
+            .add_systems(
+                Update,
+                (render_tree, rotator_system, random_walk, ui_system),
+            );
     }
 }
 
 #[derive(Resource)]
 struct RedrawTimer(Timer);
 
+#[derive(Event)]
 struct NewParamsEvent;
 
 /// This component indicates the root entity for our tree
@@ -68,7 +69,7 @@ fn render_tree(
     params: Res<Params>,
     mut param_events: EventReader<NewParamsEvent>,
 ) {
-    for _ in param_events.iter() {
+    for _ in param_events.read() {
         // Remove the old tree
         // Should only be one - the tree root
         for entity in query.iter() {
