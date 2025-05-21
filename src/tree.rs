@@ -2,8 +2,6 @@ use bevy::prelude::{Transform, Vec3};
 
 use crate::params::Params;
 
-//pub struct Branch(pub Transform, pub Option<usize>, pub bool);
-
 pub struct Branch {
     pub tr: Transform,
     pub parent_idx: Option<usize>,
