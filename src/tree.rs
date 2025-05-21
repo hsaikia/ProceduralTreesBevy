@@ -2,12 +2,22 @@ use bevy::prelude::{Transform, Vec3};
 
 use crate::params::Params;
 
-pub struct Branch(pub Transform, pub Option<usize>, pub bool);
+//pub struct Branch(pub Transform, pub Option<usize>, pub bool);
+
+pub struct Branch {
+    pub tr: Transform,
+    pub parent_idx: Option<usize>,
+    pub is_leaf: bool,
+}
 
 fn generate_leaves(parent_idx: usize, all: &mut Vec<Branch>) {
     let mut child_transform = Transform::IDENTITY;
-    child_transform = child_transform.with_translation(child_transform.local_y());
-    all.push(Branch(child_transform, Some(parent_idx), true));
+    child_transform = child_transform.with_translation(*child_transform.local_y());
+    all.push(Branch {
+        tr: child_transform,
+        parent_idx: Some(parent_idx),
+        is_leaf: true,
+    });
 }
 
 fn generate_branches(params: &Params, level: u8, parent_idx: usize, all: &mut Vec<Branch>) {
@@ -35,7 +45,11 @@ fn generate_branches(params: &Params, level: u8, parent_idx: usize, all: &mut Ve
         child_transform.rotate_local_x(angle_from_root_branch);
 
         let child_idx = all.len();
-        all.push(Branch(child_transform, Some(parent_idx), false));
+        all.push(Branch {
+            tr: child_transform,
+            parent_idx: Some(parent_idx),
+            is_leaf: false,
+        });
         if level < params.levels {
             generate_branches(params, level + 1, child_idx, all);
         } else {
@@ -47,7 +61,11 @@ fn generate_branches(params: &Params, level: u8, parent_idx: usize, all: &mut Ve
 pub fn generate(params: &Params) -> Vec<Branch> {
     let base = Transform::default();
     let mut ret: Vec<Branch> = Vec::new();
-    ret.push(Branch(base, None, false));
+    ret.push(Branch {
+        tr: base,
+        parent_idx: None,
+        is_leaf: false,
+    });
     generate_branches(params, 1, 0, &mut ret);
     ret
 }

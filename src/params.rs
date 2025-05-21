@@ -146,14 +146,14 @@ impl ParamsVector {
     }
 
     pub fn nudge(&mut self) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         let mut acceleration = Self {
             values: [0.0; NUM_PARAMS],
             magnitude: Some(PARAMS_ACCELERATION_MAG),
         };
 
         for v in &mut acceleration.values {
-            *v = rng.gen_range(-1.0..1.0);
+            *v = rng.random_range(-1.0..1.0);
         }
 
         acceleration.normalize();
