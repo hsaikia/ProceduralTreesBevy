@@ -1,9 +1,9 @@
 use bevy::prelude::*;
-use bevy_egui::EguiPlugin;
 use bevy_egui::{
     egui::{self, Slider},
-    EguiContextPass, EguiContexts,
+    EguiContexts,
 };
+use bevy_egui::{EguiPlugin, EguiPrimaryContextPass};
 use rand::Rng;
 
 use crate::params::{
@@ -17,22 +17,20 @@ pub struct ProceduralTreePlugin;
 
 impl Plugin for ProceduralTreePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(EguiPlugin {
-            enable_multipass_for_primary_context: true,
-        })
-        .add_event::<NewParamsEvent>()
-        .insert_resource(RedrawTimer(Timer::from_seconds(0.1, TimerMode::Once)))
-        .init_resource::<Params>()
-        .init_resource::<ParamsVector>()
-        .add_systems(Update, (render_tree, rotator_system, random_walk))
-        .add_systems(EguiContextPass, ui_system);
+        app.add_plugins(EguiPlugin::default())
+            .add_message::<NewParamsEvent>()
+            .insert_resource(RedrawTimer(Timer::from_seconds(0.1, TimerMode::Once)))
+            .init_resource::<Params>()
+            .init_resource::<ParamsVector>()
+            .add_systems(Update, (render_tree, rotator_system, random_walk))
+            .add_systems(EguiPrimaryContextPass, ui_system);
     }
 }
 
 #[derive(Resource)]
 struct RedrawTimer(Timer);
 
-#[derive(Event)]
+#[derive(Message)]
 struct NewParamsEvent;
 
 /// This component indicates the root entity for our tree
@@ -51,7 +49,7 @@ fn random_walk(
     mut timer: ResMut<RedrawTimer>,
     mut params: ResMut<Params>,
     mut params_vel: ResMut<ParamsVector>,
-    mut param_changed_event: EventWriter<NewParamsEvent>,
+    mut param_changed_event: MessageWriter<NewParamsEvent>,
 ) {
     if timer.0.tick(time.delta()).just_finished() {
         params_vel.nudge();
@@ -69,7 +67,7 @@ fn render_tree(
     mut materials: ResMut<Assets<StandardMaterial>>,
     query: Query<Entity, With<TreeRoot>>,
     params: Res<Params>,
-    mut param_events: EventReader<NewParamsEvent>,
+    mut param_events: MessageReader<NewParamsEvent>,
 ) {
     for _ in param_events.read() {
         // Remove the old tree
@@ -136,10 +134,10 @@ fn render_tree(
 fn ui_system(
     mut params: ResMut<Params>,
     mut timer: ResMut<RedrawTimer>,
-    mut param_changed_event: EventWriter<NewParamsEvent>,
+    mut param_changed_event: MessageWriter<NewParamsEvent>,
     mut contexts: EguiContexts,
 ) {
-    if let Some(ctx) = contexts.try_ctx_mut() {
+    if let Ok(ctx) = contexts.ctx_mut() {
         egui::Window::new("Procedural Tree Parameters").show(ctx, |ui| {
             ui.horizontal(|ui| {
                 ui.label("Children: ");
